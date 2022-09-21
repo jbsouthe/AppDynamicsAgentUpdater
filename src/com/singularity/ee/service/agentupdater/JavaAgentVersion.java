@@ -24,13 +24,13 @@ public class JavaAgentVersion implements Comparable<JavaAgentVersion> {
         if( this.getVersion().equals(other.getVersion()) ) return 0; //if the two version strings match then skip to the end, otherwise start sorting...
         if (this.major < other.major) return -1;
         if (this.major > other.major) return 1;
-        if ( other.minor == -1 ) return 0;
+        if (this.minor == -1 || other.minor == -1 ) return 0;
         if (this.minor < other.minor) return -1;
         if (this.minor > other.minor) return 1;
-        if( other.hotfix == -1 ) return 0;
+        if (this.hotfix == -1 || other.hotfix == -1 ) return 0;
         if (this.hotfix < other.hotfix) return -1;
         if (this.hotfix > other.hotfix) return 1;
-        if (other.build == -1 ) return 0;
+        if (this.build == -1 || other.build == -1 ) return 0;
         if (this.build < other.build) return -1;
         if (this.build > other.build) return 1;
         return 0; //else this must be equal, but the strings should have matched, oh well!

@@ -54,7 +54,8 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
         logger.info("Running the task to check versions and upgrade if needed");
         //TODO implement stuff
         //1. check current version against preferred and min>x<max version
-        JavaAgentVersion currentVersion = new JavaAgentVersion(getCurrentVersionFromFile());
+        JavaAgentVersion currentVersion = agentNodeProperties.getCurrentVersion();
+        if( currentVersion == null ) currentVersion = new JavaAgentVersion(getCurrentVersionFromFile());
         JavaAgentVersion newVersion = null;
         agentNodeProperties.updateProperty("agent.upgrader.version.current", currentVersion.getVersion());
         if ( agentNodeProperties.isPreferredVersionSet()) { //preferred version node property will tell us to upgrade/downgrade to a version
@@ -96,6 +97,7 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
             copyFiles(new File(serviceContext.getInstallDir()  + "/sdk-plugins"),
                     new File(serviceContext.getInstallDir()+"/../"+ newVersion.getDirectory() + "/sdk-plugins"));
             agentNodeProperties.updateProperty("agent.upgrader.version.preferred", newVersion.getVersion());
+            agentNodeProperties.updateProperty("agent.upgrader.version.current", newVersion.getVersion());
             sendRestartNotification(currentVersion, newVersion);
         } catch (IOException ioException) {
             logger.error("Exception while trying to upgrade agent: "+ ioException, ioException);
