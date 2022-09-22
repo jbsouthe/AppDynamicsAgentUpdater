@@ -20,7 +20,7 @@ setting the following will cause it to perform the updates:
     "agent.upgrader.enabled" - boolean, setting this to true causes this service to come alive
     "agent.upgrader.version.max" - highest agent version to go to
     "agent.upgrader.version.min" - lowest agent version to maintain
-    "agent.upgrader.version.preferred" - the version we want to be at
+    "agent.upgrader.version.preferred" - the version we want to be at, "22.8" will grab the latest agent of that major and minor version, so if a hotfix is published, it will be applied.
     "agent.upgrader.version.current" - this is not used on the controller side, and i'm a bit annoyed that it isn't propogated from agent to controller, it is what it is
     "agent.upgrader.repo.url" - alternative download site to get agent files from, se la vie
 
