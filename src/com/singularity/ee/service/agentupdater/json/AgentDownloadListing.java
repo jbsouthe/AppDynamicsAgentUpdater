@@ -51,6 +51,6 @@ public class AgentDownloadListing {
 
     public class DownloadDetails {
         public int id;
-        public String version, download_path, filename, title, filetype, os;
+        public String version, download_path, filename, title, filetype, os, s3_path;
     }
 }

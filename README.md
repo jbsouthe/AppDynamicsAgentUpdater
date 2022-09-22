@@ -9,7 +9,7 @@ the <agent intall dir>/ver22.###/conf/app-agent-config.xml has to have signing d
     </configuration-properties>
 
 
-The agent download from downloads.appdynamics.com requires authentication, this POC doesn't do all that, so the jar file has a friendly web server to host java agent zip files.
+Agents now will be downloaded from our download site, but if needed an alternative URL can be set which will instead attempt to download the file name from the root of the url
 
 Still working out a few bugs, and making sure the logic handles so we don't try to upgrade twice, node properties seem to not be changable from the node, so it is a one way control plane
 

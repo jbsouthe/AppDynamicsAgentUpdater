@@ -31,29 +31,6 @@ public class AgentDownloader {
 
     private AgentDownloadListing getListOfAgents( String type, String version ) {
         logger.info(String.format("Fetching list of agents available for download of type: %s and version: %s",type,version));
-        /*
-        //"https://hub.docker.com/v2/namespaces/appdynamics/repositories/java-agent/tags?status=active&page_size=100"
-        try {
-            URL url = new URL( "https://hub.docker.com/v2/namespaces/appdynamics/repositories/java-agent/tags?status=active&page_size=100" );
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestMethod("GET");
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) { response.append(inputLine); response.append("\n"); }
-            in.close();
-            if( connection.getResponseCode() != 200 )
-                logger.warn("Response: "+ connection.getResponseMessage());
-            logger.debug(String.format("Response from download list request: '%s'", response.toString()));
-            return gson.fromJson( response.toString(), AgentDownloadListing.class);
-        } catch (MalformedURLException e) {
-            logger.error(String.format("Malformed URL Exception: %s",e),e);
-        } catch (IOException ioException) {
-            logger.error(String.format("IO Exception: %s",ioException),ioException);
-        }
-        */
         try {
             URL url = new URL( String.format("https://download.appdynamics.com/download/downloadfile/?version=%s&apm=%s&format=json", version, type) );
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -88,7 +65,7 @@ public class AgentDownloader {
             }
             File tempFile = File.createTempFile("temp-agent-download", ".zip");
             outputStream = new FileOutputStream(tempFile);
-            URL url = new URL(downloadDetails.download_path);
+            URL url = new URL("https://download-files.appdynamics.com/"+downloadDetails.s3_path);
             if( downloadURL != null && downloadURL.length()>0 ) {
                 if( !downloadURL.endsWith("/") ) downloadURL = downloadURL + "/";
                 url = new URL(downloadURL + downloadDetails.filename);
