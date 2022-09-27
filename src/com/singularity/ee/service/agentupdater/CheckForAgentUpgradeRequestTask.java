@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -91,22 +92,29 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
             copyFiles(rootControllerInfoFile, backupControllerInfoFile);
             unzip(zipFileWithVersion.zipFile, serviceContext.getInstallDir()+"/..");
             copyFiles(backupControllerInfoFile, rootControllerInfoFile);
-            copyFiles(new File(serviceContext.getRuntimeConfDir()), new File(serviceContext.getInstallDir() +"/../"+ newVersion.getDirectory() + "/conf"));
+            if( ! serviceContext.getConfDir().equals(serviceContext.getRuntimeConfDir()) ) {
+                sendInfoEvent("Agent is using a custom runtime config directory, we will not modify these files: "+ serviceContext.getRuntimeConfDir());
+            }
+            copyFiles(new File(serviceContext.getConfDir()), new File(serviceContext.getInstallDir() +"/../"+ newVersion.getDirectory() + "/conf"));
             copyFiles(new File(serviceContext.getInstallDir()  + "/external-services/agent-updater"),
                     new File(serviceContext.getInstallDir()+"/../"+ newVersion.getDirectory() + "/external-services/agent-updater"));
             copyFiles(new File(serviceContext.getInstallDir()  + "/sdk-plugins"),
                     new File(serviceContext.getInstallDir()+"/../"+ newVersion.getDirectory() + "/sdk-plugins"));
             agentNodeProperties.updateProperty("agent.upgrader.version.preferred", newVersion.getVersion());
             agentNodeProperties.updateProperty("agent.upgrader.version.current", newVersion.getVersion());
-            sendRestartNotification(currentVersion, newVersion);
+            sendInfoEvent(String.format("Agent Updater has staged an upgrade from %s to %s, please restart the application for this to take effect", currentVersion.getVersion(), newVersion.getVersion()));
         } catch (IOException ioException) {
             logger.error("Exception while trying to upgrade agent: "+ ioException, ioException);
         }
     }
 
-    private void sendRestartNotification(JavaAgentVersion currentVersion, JavaAgentVersion newVersion) {
-        serviceComponent.getEventHandler().publishInfoEvent(String.format("Agent Updater has staged an upgrade from %s to %s, please restart the application for this to take effect", currentVersion.getVersion(),
-                newVersion.getVersion()), new HashMap<>());
+    private void sendInfoEvent(String message) {
+        sendInfoEvent(message, new HashMap());
+    }
+
+    private void sendInfoEvent(String message, Map map) {
+        logger.info("Sending Custom INFO Event with message: "+ message);
+        serviceComponent.getEventHandler().publishInfoEvent(message, map);
     }
 
     private void copyFiles(File sourceLocation, File targetLocation) throws IOException {
