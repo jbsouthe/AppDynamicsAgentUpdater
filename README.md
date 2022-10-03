@@ -1,5 +1,7 @@
 # AppDynamics agent upgrade dynamic service extension
 
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/jbsouthe/AppDynamicsAgentUpdater)
+
 Some setup. This should be installed in the <agent install dir>/ver22.###/external-services/agent-updater directory
 the <agent intall dir>/ver22.###/conf/app-agent-config.xml has to have signing disabled:
 
