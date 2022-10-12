@@ -21,8 +21,7 @@ public class AgentDownloaderTest extends TestCase {
     public AgentDownloaderTest() {
 
     }
-
-    /*
+    
     @Test
     public void testAgentDownloaderAppDDownloads() throws IOException {
         URL url = new URL( String.format("https://download.appdynamics.com/download/downloadfile/?version=%s&apm=%s&format=json", "22.8.0", "java-jdk8") );
@@ -62,5 +61,4 @@ public class AgentDownloaderTest extends TestCase {
         System.out.println("File downloaded to: '"+ tempFile.getAbsolutePath() +"' Size: "+ tempFile.length());
     }
 
-     */
 }
