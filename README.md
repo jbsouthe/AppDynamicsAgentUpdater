@@ -26,3 +26,4 @@ setting the following will cause it to perform the updates:
     "agent.upgrader.version.current" - this is not used on the controller side, and i'm a bit annoyed that it isn't propogated from agent to controller, it is what it is
     "agent.upgrader.repo.url" - alternative download site to get agent files from, se la vie
 
+![](doc-images/AgentUpdaterNodeProperties.png)
