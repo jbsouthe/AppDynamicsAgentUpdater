@@ -1,11 +1,12 @@
 package com.singularity.ee.service.agentupdater.web;
 
-import com.singularity.ee.service.agentupdater.JavaAgentVersion;
+import com.singularity.ee.service.agentupdater.AgentNodeProperties;
 import com.singularity.ee.service.agentupdater.json.AgentDownloadListing;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.singularity.ee.agent.util.log4j.ADLoggerFactory;
 import com.singularity.ee.agent.util.log4j.IADLogger;
+import com.singularity.ee.service.agentupdater.json.DownloadDetails;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,18 +22,19 @@ public class AgentDownloader {
     private static final IADLogger logger = ADLoggerFactory.getLogger((String)"com.singularity.ee.service.agentupdater.web.AgentDownloader");
     private AgentDownloadListing agentDownloadListing = null;
     private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private AgentNodeProperties agentNodeProperties;
+    private static final String DEFAULT_AGENT_LISTING_URL = "https://download.appdynamics.com/";
+    private static final String DEFAULT_AGENT_DOWNLOAD_URL = "https://download-files.appdynamics.com/";
 
-    public AgentDownloader( String type, JavaAgentVersion javaAgentVersion) {
-        this(type, javaAgentVersion.getVersion());
-    }
-    public AgentDownloader(String type, String version) {
+    public AgentDownloader(String type, String version, AgentNodeProperties agentNodeProperties) {
+        this.agentNodeProperties = agentNodeProperties;
         agentDownloadListing = getListOfAgents(type, version);
     }
 
     private AgentDownloadListing getListOfAgents( String type, String version ) {
         logger.info(String.format("Fetching list of agents available for download of type: %s and version: %s",type,version));
         try {
-            URL url = new URL( String.format("https://download.appdynamics.com/download/downloadfile/?version=%s&apm=%s&format=json", version, type) );
+            URL url = new URL( String.format("%sdownload/downloadfile/?version=%s&apm=%s&format=json", getDownloadUrl(DEFAULT_AGENT_LISTING_URL), version, type) );
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestMethod("GET");
@@ -55,21 +57,17 @@ public class AgentDownloader {
         return null;
     }
 
-    public ZipFileWithVersion getAgentZipFile(String downloadURL) throws IOException {
+    public ZipFileWithVersion getAgentZipFile() throws IOException {
         FileOutputStream outputStream = null;
         try {
-            AgentDownloadListing.DownloadDetails downloadDetails = this.agentDownloadListing.getBestAgent();
+            DownloadDetails downloadDetails = this.agentDownloadListing.getBestAgent();
             if( downloadDetails == null) {
                 logger.error("No suitable download found for update");
                 return null;
             }
             File tempFile = File.createTempFile("temp-agent-download", ".zip");
             outputStream = new FileOutputStream(tempFile);
-            URL url = new URL("https://download-files.appdynamics.com/"+downloadDetails.s3_path);
-            if( downloadURL != null && downloadURL.length()>0 ) {
-                if( !downloadURL.endsWith("/") ) downloadURL = downloadURL + "/";
-                url = new URL(downloadURL + downloadDetails.filename);
-            }
+            URL url = new URL(getDownloadUrl(DEFAULT_AGENT_DOWNLOAD_URL) + downloadDetails.s3_path);
             logger.info("downloading "+ url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             int status = connection.getResponseCode();
@@ -91,5 +89,14 @@ public class AgentDownloader {
                 if (outputStream != null) outputStream.close();
             } catch (IOException ignored) {}
         }
+    }
+
+
+    private String getDownloadUrl( String defaultURL) {
+        String propertyDownloadUrl = defaultURL;
+        if(agentNodeProperties.isDownloadURLSet() )
+            propertyDownloadUrl = agentNodeProperties.getDownloadURL();
+        if( !propertyDownloadUrl.endsWith("/") ) propertyDownloadUrl+="/";
+        return propertyDownloadUrl;
     }
 }
