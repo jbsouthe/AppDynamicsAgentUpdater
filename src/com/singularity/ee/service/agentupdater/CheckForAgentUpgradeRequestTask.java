@@ -1,9 +1,9 @@
 package com.singularity.ee.service.agentupdater;
 
 import com.singularity.ee.agent.appagent.kernel.spi.IDynamicService;
+import com.singularity.ee.service.agentupdater.json.JavaAgentVersion;
 import com.singularity.ee.service.agentupdater.web.AgentDownloader;
 import com.singularity.ee.agent.appagent.kernel.ServiceComponent;
-import com.singularity.ee.agent.appagent.kernel.spi.IAgentService;
 import com.singularity.ee.agent.appagent.kernel.spi.IServiceContext;
 import com.singularity.ee.agent.appagent.services.bciengine.JavaAgentManifest;
 import com.singularity.ee.agent.util.log4j.ADLoggerFactory;
@@ -81,8 +81,13 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
             f. update current version and send custom event alerting that restart is needed
          */
         try {
-            AgentDownloader agentDownloader = new AgentDownloader("java-jdk8", newVersion);
-            ZipFileWithVersion zipFileWithVersion = agentDownloader.getAgentZipFile(agentNodeProperties.getDownloadURL());
+            AgentDownloader agentDownloader = new AgentDownloader("java-jdk8", newVersion.getVersion(), agentNodeProperties);
+            ZipFileWithVersion zipFileWithVersion = agentDownloader.getAgentZipFile();
+            if( zipFileWithVersion == null ) {
+                logger.warn("No Agent Found for version "+ newVersion);
+                sendInfoEvent(String.format("Agent Updater can not find an agent for version '%s', please make sure it is available",newVersion));
+                return;
+            }
             newVersion = zipFileWithVersion.javaAgentVersion;
             logger.info(String.format("installDir: %s BaseConfDir: %s ConfDir: %s AgentRuntimeDir: %s RuntimeConfDir: %s",
                     serviceContext.getInstallDir(), serviceContext.getBaseConfDir(), serviceContext.getConfDir(),
