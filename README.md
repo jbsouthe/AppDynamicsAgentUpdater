@@ -3,12 +3,14 @@
 [![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/jbsouthe/AppDynamicsAgentUpdater)
 
 Some setup. This should be installed in the <agent install dir>/ver22.###/external-services/agent-updater directory
-the <agent intall dir>/ver22.###/conf/app-agent-config.xml has to have signing disabled:
+the <agent intall dir>/ver22.###/conf/app-agent-config.xml at line 120 has to have signing disabled:
 
     <configuration-properties>
         <property name="external-service-directory" value="external-services"/>
         <property name="enable-jar-signing" value="false"/>
     </configuration-properties>
+
+![](doc-images/agent-config-edit.png)
 
 
 Agents now will be downloaded from our download site, but if needed an alternative URL can be set which will instead attempt to download the file name from the root of the url
