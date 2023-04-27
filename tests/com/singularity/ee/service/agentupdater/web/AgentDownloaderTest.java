@@ -3,6 +3,7 @@ package com.singularity.ee.service.agentupdater.web;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.singularity.ee.service.agentupdater.json.AgentDownloadListing;
+import com.singularity.ee.service.agentupdater.json.DownloadDetails;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class AgentDownloaderTest extends TestCase {
         System.out.println(String.format("Response from dowload list request: '%s'", response.toString()));
         AgentDownloadListing agentDownloadListing = gson.fromJson(response.toString(), AgentDownloadListing.class);
 
-        AgentDownloadListing.DownloadDetails downloadDetails = agentDownloadListing.getBestAgent();
+        DownloadDetails downloadDetails = agentDownloadListing.getBestAgent();
         File tempFile = File.createTempFile("temp-agent-download", ".zip");
         FileOutputStream outputStream = new FileOutputStream(tempFile);
         url = new URL(downloadDetails.download_path);

@@ -3,6 +3,7 @@ package com.singularity.ee.service.agentupdater;
 import com.singularity.ee.agent.appagent.kernel.spi.data.IServiceConfig;
 import com.singularity.ee.agent.util.log4j.ADLoggerFactory;
 import com.singularity.ee.agent.util.log4j.IADLogger;
+import com.singularity.ee.service.agentupdater.json.JavaAgentVersion;
 import com.singularity.ee.util.string.StringOperations;
 
 import java.util.HashMap;
@@ -64,6 +65,7 @@ public class AgentNodeProperties extends Observable {
     public boolean isMinVersionSet() { return this.properties.get("agent.upgrader.version.min") != null; }
     public boolean isPreferredVersionSet() { return this.properties.get("agent.upgrader.version.preferred") != null; }
     public boolean isCurrentVersionSet() { return this.properties.get("agent.upgrader.version.current") != null; }
+    public boolean isDownloadURLSet() { return this.properties.get("agent.upgrader.repo.url") != null; }
 
     public JavaAgentVersion getMinVersion() {
         if( isMinVersionSet() ) return new JavaAgentVersion(this.properties.get("agent.upgrader.version.min"));

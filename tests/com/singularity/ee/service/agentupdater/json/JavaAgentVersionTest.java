@@ -1,4 +1,4 @@
-package com.singularity.ee.service.agentupdater;
+package com.singularity.ee.service.agentupdater.json;
 
 import junit.framework.TestCase;
 import org.junit.Test;

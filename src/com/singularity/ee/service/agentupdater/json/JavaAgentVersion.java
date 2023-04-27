@@ -1,7 +1,13 @@
-package com.singularity.ee.service.agentupdater;
+package com.singularity.ee.service.agentupdater.json;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.regex.Pattern;
 
 //22.8.0.3333
 public class JavaAgentVersion implements Comparable<JavaAgentVersion> {
+
+    private static Pattern versionPattern = Pattern.compile(".*-(\\d+.\\d+.\\d+.\\d+)\\.zip");
 
     private String version;
     public int major=0, minor=-1, hotfix=-1, build=-1;
@@ -14,6 +20,13 @@ public class JavaAgentVersion implements Comparable<JavaAgentVersion> {
             if (parts.length > 2) hotfix = Integer.parseInt(parts[2]);
             if (parts.length > 3) build = Integer.parseInt(parts[3]);
         }
+    }
+
+    public static JavaAgentVersion getJavaAgentVersion( File file ) throws IOException {
+        String versionString = versionPattern.matcher(file.getName()).group();
+        if( versionString == null )
+            throw new IOException("Error extracting version from file: "+ file.getName());
+        return new JavaAgentVersion(versionString);
     }
 
     public String getVersion() { return version; }

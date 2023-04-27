@@ -1,6 +1,6 @@
 package com.singularity.ee.service.agentupdater.web;
 
-import com.singularity.ee.service.agentupdater.JavaAgentVersion;
+import com.singularity.ee.service.agentupdater.json.JavaAgentVersion;
 
 import java.io.File;
 

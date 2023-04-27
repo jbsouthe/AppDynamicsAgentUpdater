@@ -49,8 +49,4 @@ public class AgentDownloadListing {
         return null;
     }
 
-    public class DownloadDetails {
-        public int id;
-        public String version, download_path, filename, title, filetype, os, s3_path;
-    }
 }
