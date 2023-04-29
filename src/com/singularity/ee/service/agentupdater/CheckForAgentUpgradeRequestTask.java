@@ -2,6 +2,7 @@ package com.singularity.ee.service.agentupdater;
 
 import com.singularity.ee.agent.appagent.kernel.spi.IDynamicService;
 import com.singularity.ee.service.agentupdater.json.JavaAgentVersion;
+import com.singularity.ee.service.agentupdater.json.LockFile;
 import com.singularity.ee.service.agentupdater.web.AgentDownloader;
 import com.singularity.ee.agent.appagent.kernel.ServiceComponent;
 import com.singularity.ee.agent.appagent.kernel.spi.IServiceContext;
@@ -26,7 +27,7 @@ import java.util.zip.ZipInputStream;
 
 public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
     private static final IADLogger logger = ADLoggerFactory.getLogger((String)"com.singularity.ee.service.agentupdater.CheckForAgentUpgradeRequestTask");
-
+    private static final String LOCK_FILE_LOCATION = "external-services/agent-updater/lockFile.json";
     private IDynamicService agentService;
     private AgentNodeProperties agentNodeProperties;
     private ServiceComponent serviceComponent;
@@ -53,7 +54,6 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
     @Override
     public void run() {
         logger.info("Running the task to check versions and upgrade if needed");
-        //TODO implement stuff
         //1. check current version against preferred and min>x<max version
         JavaAgentVersion currentVersion = agentNodeProperties.getCurrentVersion();
         if( currentVersion == null ) currentVersion = new JavaAgentVersion(getCurrentVersionFromFile());
@@ -74,12 +74,15 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
         logger.info(String.format("Upgrade Java Agent from %s to %s",currentVersion.getVersion(), newVersion.getVersion()));
         /*2. if upgrade needed, then
             a. download newest/preferred version of agent
+            -. check lock file, create lock file, verify lock file
             b. copy root controller-info.xml to backup
             c. unzip agent into current directory
             d. copy backup root config files to root
             e. copy customized config files to new version dir
             f. update current version and send custom event alerting that restart is needed
+            z. remove lock file
          */
+        LockFile lockFile = null;
         try {
             AgentDownloader agentDownloader = new AgentDownloader("java-jdk8", newVersion.getVersion(), agentNodeProperties);
             ZipFileWithVersion zipFileWithVersion = agentDownloader.getAgentZipFile();
@@ -87,6 +90,29 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
                 logger.warn("No Agent Found for version "+ newVersion);
                 sendInfoEvent(String.format("Agent Updater can not find an agent for version '%s', please make sure it is available",newVersion));
                 return;
+            }
+            lockFile = LockFile.getLockFile( serviceContext.getInstallDir() + File.pathSeparator + LOCK_FILE_LOCATION);
+            if( lockFile != null && !lockFile.isThisMe() ) {
+                boolean continueAnyway = false;
+                if( lockFile.age() > 5*60000 ) { //if older than five minutes it is most likely stale
+                    continueAnyway = true;
+                }
+                sendInfoEvent(String.format("Agent Updater attempted to get lock file, found an existing one '%s' will continue? %s", lockFile, continueAnyway));
+                if( continueAnyway ) {
+                    lockFile.delete();
+                    LockFile.getLockFile(serviceContext.getInstallDir() + File.pathSeparator + LOCK_FILE_LOCATION);
+                    if ( lockFile == null || !lockFile.isThisMe()) {
+                        continueAnyway = false;
+                        sendInfoEvent(String.format("Agent Updater attempted to get lock file a second time and still found an existing one '%s' will continue? %s", lockFile, continueAnyway));
+                    }
+                    lockFile = null;
+                } else {
+                    lockFile = null;
+                }
+            }
+            if( lockFile == null ) { //all our attempts failed for some reason, time to bail
+                logger.warn("Was not able to get a lock file, let's stop and try again in the next cycle");
+                sendInfoEvent("Agent Updater was not able to obtain the lock file, will stop and let the owner of the lock upgrade");
             }
             newVersion = zipFileWithVersion.javaAgentVersion;
             logger.info(String.format("installDir: %s BaseConfDir: %s ConfDir: %s AgentRuntimeDir: %s RuntimeConfDir: %s",
@@ -110,6 +136,11 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
             sendInfoEvent(String.format("Agent Updater has staged an upgrade from %s to %s, please restart the application for this to take effect", currentVersion.getVersion(), newVersion.getVersion()));
         } catch (IOException ioException) {
             logger.error("Exception while trying to upgrade agent: "+ ioException, ioException);
+        } finally {
+            if( lockFile != null ) {
+                logger.debug(String.format("Removing lock file: %s", lockFile));
+                lockFile.delete();
+            }
         }
     }
 
