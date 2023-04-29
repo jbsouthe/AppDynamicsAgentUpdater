@@ -1,13 +1,18 @@
 package com.singularity.ee.service.agentupdater.json;
 
+import com.singularity.ee.agent.util.log4j.ADLoggerFactory;
+import com.singularity.ee.agent.util.log4j.IADLogger;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 //22.8.0.3333
 public class JavaAgentVersion implements Comparable<JavaAgentVersion> {
+    //private static final IADLogger logger = ADLoggerFactory.getLogger((String)"com.singularity.ee.service.agentupdater.json.JavaAgentVersion");
 
-    private static Pattern versionPattern = Pattern.compile(".*-(\\d+.\\d+.\\d+.\\d+)\\.zip");
+    private static Pattern versionPattern = Pattern.compile(".*-(?<version>\\d+.\\d+.\\d+.\\d+)\\.zip");
 
     private String version;
     public int major=0, minor=-1, hotfix=-1, build=-1;
@@ -23,7 +28,10 @@ public class JavaAgentVersion implements Comparable<JavaAgentVersion> {
     }
 
     public static JavaAgentVersion getJavaAgentVersion( File file ) throws IOException {
-        String versionString = versionPattern.matcher(file.getName()).group();
+        Matcher matcher = versionPattern.matcher(file.getName());
+        String versionString = null;
+        if( matcher.find() ) versionString = matcher.group("version");
+        //logger.info(String.format("getting agent version '%s' from file: %s", versionString, file.getName()));
         if( versionString == null )
             throw new IOException("Error extracting version from file: "+ file.getName());
         return new JavaAgentVersion(versionString);

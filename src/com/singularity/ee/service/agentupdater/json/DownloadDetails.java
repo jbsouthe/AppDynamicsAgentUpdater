@@ -6,11 +6,13 @@ import java.io.IOException;
 public class DownloadDetails {
 
     public DownloadDetails() {} //for GSON
-    public DownloadDetails( File file ) throws IOException {
+    public DownloadDetails( int id, File file ) throws IOException {
+        this.id=id;
         this.filename=file.getName();
         this.filetype="java-jdk8";
         this.s3_path=filename;
         this.javaAgentVersion = JavaAgentVersion.getJavaAgentVersion(file);
+        this.version = this.javaAgentVersion.getVersion();
     }
     public int id;
     public String version, download_path, filename, title, filetype, os, s3_path;

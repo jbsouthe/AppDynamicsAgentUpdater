@@ -21,11 +21,12 @@ public class SimpleFileServer {
         try {
             InetSocketAddress address = new InetSocketAddress(port);
             HttpServer httpServer = HttpServer.create(address, 0);
+            int cnt=0;
             for( File file : directory.listFiles() ) {
                 if(file.isFile()) {
                     httpServer.createContext("/"+file.getName(), new SendFileHandler(file));
                     System.out.println(String.format("Adding file: /%s",file.getName()));
-                    this.downloadDetailsList.add( new DownloadDetails(file) );
+                    this.downloadDetailsList.add( new DownloadDetails(cnt++,file) );
                 }
             }
             httpServer.createContext("/download/downloadfile/", new SendDetailListHandler(this.downloadDetailsList));

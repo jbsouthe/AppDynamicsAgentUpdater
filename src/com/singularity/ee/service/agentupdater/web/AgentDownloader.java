@@ -35,6 +35,7 @@ public class AgentDownloader {
         logger.info(String.format("Fetching list of agents available for download of type: %s and version: %s",type,version));
         try {
             URL url = new URL( String.format("%sdownload/downloadfile/?version=%s&apm=%s&format=json", getDownloadUrl(DEFAULT_AGENT_LISTING_URL), version, type) );
+            logger.debug(String.format("Getting url: '%s'",url));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestMethod("GET");
