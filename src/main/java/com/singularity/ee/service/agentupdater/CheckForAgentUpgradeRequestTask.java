@@ -145,11 +145,12 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
     }
 
     private void sendInfoEvent(String message) {
-        sendInfoEvent(message, new HashMap());
+        sendInfoEvent(message, MetaData.getAsMap());
     }
 
     private void sendInfoEvent(String message, Map map) {
         logger.info("Sending Custom INFO Event with message: "+ message);
+        if( !map.containsKey("agentupdater-version") ) map.putAll(MetaData.getAsMap());
         serviceComponent.getEventHandler().publishInfoEvent(message, map);
     }
 
