@@ -121,6 +121,9 @@
                     </includes>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
+                        <manifest>
+                            <mainClass>com.singularity.ee.service.agentupdater.web.SimpleFileServer</mainClass>
+                        </manifest>
                         <manifestEntries>
                             <Implementation-Title>agent-self-upgrader</Implementation-Title>
                             <implementation-class-name>com.singularity.ee.service.agentupdater.VersionSelfMonitoringService</implementation-class-name>
