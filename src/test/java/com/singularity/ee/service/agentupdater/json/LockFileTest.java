@@ -11,7 +11,7 @@ public class LockFileTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        existingFile = new File("./tests/resources/otherHostLockFile.json");
+        existingFile = new File("./src/test/resources/otherHostLockFile.json");
     }
 
     @Test
@@ -25,7 +25,7 @@ public class LockFileTest extends TestCase {
     }
 
     public void testLockFileCreateNew() throws Exception {
-        File newFile = File.createTempFile("lockFile", ".json", new File("tests/resources") );
+        File newFile = File.createTempFile("lockFile", ".json", new File("./src/test/resources") );
         newFile.delete(); //we just want the name
         LockFile lockFile = LockFile.getLockFile(newFile.getCanonicalPath());
         System.out.println("New Lockfile: "+ lockFile);
@@ -35,7 +35,7 @@ public class LockFileTest extends TestCase {
     }
 
     public void testLockFileEmptyFile() throws Exception {
-        File emptyFile = File.createTempFile("lockFile", ".json", new File("tests/resources") );
+        File emptyFile = File.createTempFile("lockFile", ".json", new File("./src/test/resources") );
         LockFile lockFile = LockFile.getLockFile(emptyFile.getCanonicalPath());
         System.out.println("New Lockfile: "+ lockFile);
         emptyFile.delete();
@@ -44,7 +44,7 @@ public class LockFileTest extends TestCase {
     }
 
     public void testLockFileInvalidJSON() throws Exception {
-        File badFile = new File("tests/resources/invalidLockFile.json");
+        File badFile = new File("./src/test/resources/invalidLockFile.json");
         assert badFile.exists();
         LockFile lockFile = LockFile.getLockFile(badFile.getCanonicalPath());
         System.out.println("Bad Lockfile (should be null): "+ lockFile);
@@ -52,7 +52,7 @@ public class LockFileTest extends TestCase {
     }
 
     public void testLockFileUseCaseLogic() throws Exception {
-        File newFile = File.createTempFile("lockFile", ".json", new File("tests/resources") );
+        File newFile = File.createTempFile("lockFile", ".json", new File("./src/test/resources") );
         newFile.delete(); //we just want the name
         LockFile lockFile = LockFile.getLockFile(newFile.getCanonicalPath());
         assert lockFile != null;

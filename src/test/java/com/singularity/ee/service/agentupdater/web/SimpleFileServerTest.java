@@ -19,7 +19,7 @@ public class SimpleFileServerTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        this.simpleFileServer = new SimpleFileServer(8989, new File("./tests/resources"), new Properties());
+        this.simpleFileServer = new SimpleFileServer(8989, new File("./src/test/resources"), new Properties());
         this.agentNodeProperties = new AgentNodeProperties();
         this.agentNodeProperties.updateProperty("agent.upgrader.repo.url", "http://localhost:8989");
     }
