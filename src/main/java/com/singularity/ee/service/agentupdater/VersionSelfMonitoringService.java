@@ -32,7 +32,8 @@ public class VersionSelfMonitoringService implements IDynamicService {
     private IDynamicServiceManager dynamicServiceManager;
 
     public VersionSelfMonitoringService() {
-        logger.info("Initializing Agent Updater Service");
+        logger.info(String.format("Initializing Agent Updater Service %s build date %s by %s visit %s for the most up to date information.",
+                MetaData.VERSION, MetaData.BUILDTIMESTAMP, MetaData.GECOS, MetaData.DEVNET));
     }
 
     public VersionSelfMonitoringService(AgentNodeProperties agentNodeProperties, long taskInitialDelay, long taskInterval) {

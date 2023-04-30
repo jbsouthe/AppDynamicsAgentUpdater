@@ -1,5 +1,6 @@
 package com.singularity.ee.service.agentupdater.web;
 
+import com.singularity.ee.service.agentupdater.MetaData;
 import com.singularity.ee.service.agentupdater.json.DownloadDetails;
 import com.sun.net.httpserver.*;
 
@@ -117,6 +118,8 @@ public class SimpleFileServer {
     }
 
     public static void main( String... args) {
+        System.out.println(String.format("Initializing Agent Updater Simple Web Server %s build date %s by %s visit %s for the most up to date information.",
+                MetaData.VERSION, MetaData.BUILDTIMESTAMP, MetaData.GECOS, MetaData.DEVNET));
         if( args.length == 0 ) { //simple mode...
             int port = Integer.parseInt(System.getProperty("server-port", "8000"));
             String dir = System.getProperty("server-directory", ".");
