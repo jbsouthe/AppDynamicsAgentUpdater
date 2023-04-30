@@ -1,0 +1,29 @@
+<assembly>
+    <id>deployment</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>.</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>README.md</include>
+                <include>LICENSE</include>
+                <include>NOTICE.txt</include>
+                <include>config.properties</include>
+				<include>doc-images/*.png</include>
+            </includes>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>AgentUpdater-${pom.version}.jar</source>
+            <outputDirectory>.</outputDirectory>
+            <destName>AgentUpdater.jar</destName>
+        </file>
+    </files>
+</assembly>
