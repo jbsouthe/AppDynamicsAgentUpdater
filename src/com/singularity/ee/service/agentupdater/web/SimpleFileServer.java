@@ -23,7 +23,7 @@ public class SimpleFileServer {
             HttpServer httpServer = HttpServer.create(address, 0);
             int cnt=0;
             for( File file : directory.listFiles() ) {
-                if(file.isFile()) {
+                if(file.isFile() && file.getName().toLowerCase().endsWith(".zip")) {
                     httpServer.createContext("/"+file.getName(), new SendFileHandler(file));
                     System.out.println(String.format("Adding file: /%s",file.getName()));
                     this.downloadDetailsList.add( new DownloadDetails(cnt++,file) );
