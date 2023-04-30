@@ -5,6 +5,9 @@
 
 This extension allows the AppDynamics Java Agent to upgrade itself. Ironically, it does not yet install itself, but once installed you can control it via node properties set at the Controller UI.
 
+This plugin is in BETA and not supported by AppDynamics, please report any issues to this github repository and our team will respond as soon as possible.
+Thanks, John
+
 ## Theory of Operation "how does it work"
 
 The agent dynamic service needs to be installed and then node properties from the Controller UI will dictate how it acts
