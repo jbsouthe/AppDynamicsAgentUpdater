@@ -1,6 +1,7 @@
 package com.singularity.ee.service.agentupdater.web;
 
 import com.singularity.ee.service.agentupdater.MetaData;
+import com.singularity.ee.service.agentupdater.exceptions.WebServerInitException;
 import com.singularity.ee.service.agentupdater.json.DownloadDetails;
 import com.sun.net.httpserver.*;
 
@@ -25,13 +26,16 @@ public class SimpleFileServer {
             System.out.println("Starting HTTP Server (without SSL) ...");
             InetSocketAddress address = new InetSocketAddress(port);
             HttpServer httpServer = HttpServer.create(address, 0);
-            addContexts( httpServer, directory);
+            addContexts(httpServer, directory);
             httpServer.setExecutor(
                     new ThreadPoolExecutor(4, Integer.parseInt(props.getProperty("threadPoolMaxSize", "8")),
-                    Integer.parseInt(props.getProperty("threadPoolKeepAliveSeconds", "30")), TimeUnit.SECONDS,
-                    new ArrayBlockingQueue<Runnable>(Integer.parseInt(props.getProperty("threadPoolCapacity", "100")))));
+                            Integer.parseInt(props.getProperty("threadPoolKeepAliveSeconds", "30")), TimeUnit.SECONDS,
+                            new ArrayBlockingQueue<Runnable>(Integer.parseInt(props.getProperty("threadPoolCapacity", "100")))));
             httpServer.start();
-            System.out.println("Server Started listening on "+ address.toString());
+            System.out.println("Server Started listening on " + address.toString());
+        } catch (WebServerInitException initException) {
+            System.out.println("Exiting because: "+ initException.getMessage());
+            System.exit(2);
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
@@ -98,9 +102,12 @@ public class SimpleFileServer {
                 new SimpleFileServer( port, new File(directory), props ); //silly
             }
 
+        } catch (WebServerInitException initException) {
+            System.out.println("Exiting because: "+ initException.getMessage());
+            System.exit(2);
         } catch (Exception exception) {
             System.out.println("Failed to create web server on port " + props.getProperty("serverPort","8000") + " of localhost; Exception: " + exception.getMessage());
-            return;
+            System.exit(3);
         }
     }
 
@@ -115,6 +122,7 @@ public class SimpleFileServer {
             }
         }
         httpServer.createContext("/download/downloadfile/", new SendDetailListHandler(this.downloadDetailsList));
+        if( this.downloadDetailsList.size() == 0 ) throw new WebServerInitException("No agent files found in the target directory "+ directory.getAbsolutePath() +" this will not serve anything!");
     }
 
     public static void main( String... args) {
