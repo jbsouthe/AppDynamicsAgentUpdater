@@ -64,7 +64,7 @@ public class LockFileTest extends TestCase {
             System.out.println(String.format("Agent Updater attempted to get lock file, found an existing one '%s' will continue? %s", lockFile, continueAnyway));
             if( continueAnyway ) {
                 lockFile.delete();
-                LockFile.getLockFile(newFile.getCanonicalPath());
+                lockFile = LockFile.getLockFile(newFile.getCanonicalPath());
                 if ( lockFile == null || !lockFile.isThisMe()) {
                     continueAnyway = false;
                     System.out.println(String.format("Agent Updater attempted to get lock file a second time and still found an existing one '%s' will continue? %s", lockFile, continueAnyway));

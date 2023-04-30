@@ -100,7 +100,7 @@ public class CheckForAgentUpgradeRequestTask implements IAgentRunnable {
                 sendInfoEvent(String.format("Agent Updater attempted to get lock file, found an existing one '%s' will continue? %s", lockFile, continueAnyway));
                 if( continueAnyway ) {
                     lockFile.delete();
-                    LockFile.getLockFile(serviceContext.getInstallDir() + File.pathSeparator + LOCK_FILE_LOCATION);
+                    lockFile = LockFile.getLockFile(serviceContext.getInstallDir() + File.pathSeparator + LOCK_FILE_LOCATION);
                     if ( lockFile == null || !lockFile.isThisMe()) {
                         continueAnyway = false;
                         sendInfoEvent(String.format("Agent Updater attempted to get lock file a second time and still found an existing one '%s' will continue? %s", lockFile, continueAnyway));
