@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class AgentDownloaderTest extends TestCase {
 
@@ -25,7 +27,9 @@ public class AgentDownloaderTest extends TestCase {
 
     @Test
     public void testAgentDownloaderAppDDownloads() throws IOException {
-        URL url = new URL( String.format("https://download.appdynamics.com/download/downloadfile/?version=%s&apm=%s&format=json", "22.8.0", "java-jdk8") );
+        SimpleDateFormat sdfYY = new SimpleDateFormat("yy");
+        int year = Integer.parseInt(sdfYY.format(new Date()));
+        URL url = new URL( String.format("https://download.appdynamics.com/download/downloadfile/?version=%s&apm=%s&format=json", year-1, "java-jdk8") );
         System.out.println(String.format("GET Request: '%s'",url));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Content-Type", "application/json");
@@ -42,6 +46,7 @@ public class AgentDownloaderTest extends TestCase {
         AgentDownloadListing agentDownloadListing = gson.fromJson(response.toString(), AgentDownloadListing.class);
 
         DownloadDetails downloadDetails = agentDownloadListing.getBestAgent();
+        System.out.println("Best Agent: "+ downloadDetails);
         File tempFile = File.createTempFile("temp-agent-download", ".zip");
         FileOutputStream outputStream = new FileOutputStream(tempFile);
         url = new URL(downloadDetails.download_path);
@@ -60,6 +65,9 @@ public class AgentDownloaderTest extends TestCase {
         }
         outputStream.getChannel().transferFrom(Channels.newChannel(connection.getInputStream()), 0, Long.MAX_VALUE);
         System.out.println("File downloaded to: '"+ tempFile.getAbsolutePath() +"' Size: "+ tempFile.length());
+        assert tempFile.length() > 20000;
+        tempFile.delete();
+        System.out.println("Everything looks good, so temp file deleted");
     }
 
 }

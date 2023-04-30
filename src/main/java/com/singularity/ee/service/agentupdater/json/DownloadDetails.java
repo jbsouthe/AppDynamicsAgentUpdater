@@ -21,4 +21,7 @@ public class DownloadDetails {
         if( javaAgentVersion.compareTo( otherJavaAgentVersion ) == 0 ) return true;
         return false;
     }
+    public String toString() {
+        return String.format("version: %s file: %s type: %s s3_path: %s", version, filename, filetype, s3_path);
+    }
 }
